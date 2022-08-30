@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="ru">
+ <head>
+  <meta http-equiv="Content-type" content="text/html; charset=utf-8">  
+  
+  
+  <link rel="stylesheet" href="bootstrap.min.css">
+  <link rel="stylesheet" type="text/css" href="style.css">
+  <link rel="stylesheet" type="text/css" href="themes.css">   
+  <script type="text/javascript" src="function.js"></script>
+  <script type="text/javascript" src="colorpicker.js"></script>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>umolab device</title>
+  <script type="text/javascript">
+   var set_real_time;
+    
+   function page_load(submit)
+   {
+     load();	
+	 //setModeName(val("cM"));
+   }	
+	
+   function handleServerResponse(){
+    clearTimeout(set_real_time);
+   }
+   function setModeName(mID)
+   {
+      document.getElementById("cM").innerHTML = getModeNameByID(mID);
+   }
+   function setMode2Name(mID)
+   {
+      document.getElementById("cM1").innerHTML = GetSecondNameByID(mID);
+   }
+   
+   function real_time(hours,min,sec) {
+   sec=Number(sec)+1;
+    if (sec>=60){min=Number(min)+1;sec=0;}
+    if (min>=60){hours=Number(hours)+1;min=0;}
+    if (hours>=24){hours=0};
+    document.getElementById("time").innerHTML = hours+":"+min+":"+sec;
+    set_real_time = setTimeout("real_time("+hours+","+min+","+sec+");", 1000);
+   }
+   function load_time(submit){
+    server = "/Time";
+    send_request(submit,server);
+    load();
+   }
+   function time_zone(submit){
+    server = "/TimeZone?timezone="+val('timezone');
+    send_request(submit,server);
+   }
+   
+   function setRGBVal(submit){
+    server = "/setrgb?rVal="+val('rVal')+"&gVal="+val('gVal')+"&bVal="+val('bVal');
+	console.log(server);
+    send_request(submit,server);
+	document.getElementById('rVal').innerHTML = val('rVal');
+	document.getElementById('gVal').innerHTML = val('gVal');
+	document.getElementById('bVal').innerHTML = val('bVal');
+	//load();
+	setModeName(0);	
+   }
+   function setRGBVal1(submit){
+    server = "/set2mode?r1Val="+val('r1Val')+"&g1Val="+val('g1Val')+"&b1Val="+val('b1Val');
+	console.log(server);
+    send_request(submit,server);
+	document.getElementById('r1Val').innerHTML = val('r1Val');
+	document.getElementById('g1Val').innerHTML = val('g1Val');
+	document.getElementById('b1Val').innerHTML = val('b1Val');
+	//load();
+	setMode2Name(1);	
+   }
+   function setRGBVal2(submit){
+    server = "/set3mode?r2Val="+val('r2Val')+"&g2Val="+val('g2Val')+"&b2Val="+val('b2Val')+"&usaled="+((document.getElementById("usaled").checked)? 1:0);
+	console.log(server);
+    send_request(submit,server);
+	document.getElementById('r2Val').innerHTML = val('r2Val');
+	document.getElementById('g2Val').innerHTML = val('g2Val');
+	document.getElementById('b2Val').innerHTML = val('b2Val');
+	
+   }
+   
+   function setmode(submit)
+   {
+    server = "/setmode?mode="+submit.id[4];
+	send_request(submit,server);
+	setModeName(Number(submit.id[4]));
+   }
+   function set2off(submit)
+   {
+    server = "/set2modeoff";
+	send_request(submit,server);
+	setMode2Name(0);   
+   }
+   function set_time_zone(submit){
+    var set_date = new Date();
+    var gmtHours = -set_date.getTimezoneOffset()/60;
+    document.getElementById('timezone').value = gmtHours;
+    server = "/TimeZone?timezone="+gmtHours;
+    send_request(submit,server);
+   }
+   function set_ssid(submit){
+    server = "/ssid?ssid="+val('ssid')+"&password="+encodeURIComponent(val('password'));
+    send_request(submit,server);
+    alert("Измененя вступят в силу после перезагрузки. Пожалуйта перезагрузите устройство.");
+   }
+   function set_ssid_ap(submit){
+    server = "/ssidap?ssidAP="+val('ssidap')+"&passwordAP="+encodeURIComponent(val('passwordAp'));
+    send_request(submit,server);
+    alert("Измененя вступят в силу после перезагрузки. Пожалуйта перезагрузите устройство.");
+   }
+   function set_ssdp(submit){
+    server = "/ssdp?ssdp="+val('ssdp');
+    send_request(submit,server);
+    document.getElementById('ssdp_t').innerHTML = val('ssdp');
+   }
+   function restart(submit,texts){
+    if (confirm(texts)) {
+	 server = "/restart?device=ok";
+     send_request(submit,server);
+     return true;
+    } else {
+     return false;
+    }
+   }
+  </script>
+ </head>
+ <body onload="page_load();">
+ 	    <input type="hidden" id="rVal" value="0">
+		<input type="hidden" id="gVal" value="0">
+		<input type="hidden" id="bVal" value="0">
+		<input type="hidden" id="r1Val" value="0">
+		<input type="hidden" id="g1Val" value="0">
+		<input type="hidden" id="b1Val" value="0">
+		<input type="hidden" id="r2Val" value="0">
+		<input type="hidden" id="g2Val" value="0">
+		<input type="hidden" id="b2Val" value="0">
+  <div class="container">
+   <div class="row" style="text-align:center;"> 
+   <div class="hr20"></div>   
+    <div class="col-sm-offset-2 col-sm-8 col-md-offset-3 col-md-6">
+     <h5 class="alert-info" id="ssdp_t">&nbsp;</h5>
+	   <h2 id="cM">&nbsp;</h2>
+        
+          <div class="col-sm-offset-20">
+            <div id="color-picker-first" class="cp-default"></div>
+    
+        <script type="text/javascript">
+    
+            var c1 = ColorPicker(
+    
+            document.getElementById('color-picker-first'),
+    
+            function(hex, hsv, rgb) {
+                //console.log(hsv.h, hsv.s, hsv.v);         // [0-359], [0-1], [0-1]
+                //console.log(rgb.r, rgb.g, rgb.b);         // [0-255], [0-255], [0-255]
+                //document.body.style.backgroundColor = hex;        // #HEX
+                document.getElementById('rVal').value = rgb.r;
+	            document.getElementById('gVal').value = rgb.g;
+	            document.getElementById('bVal').value = rgb.b;
+				document.getElementById('c1_border').style.borderBottom = "20px solid " + hex;
+            });
+			
+        </script>
+		 
+		</div>
+
+		  <p class="hr200" id="c1_border">&nbsp;</p>
+      <input type="submit" value="цвет" onclick="setRGBVal(this);" class="inox_shining_blue">
+      <input type="submit" value="все эффекты" class="inox_shining_blue" id="mode1" onclick="setmode(this);">      
+	  <input type="submit" value="радуга" class="inox_shining_blue" id="mode2" onclick="setmode(this);">
+	  <input type="submit" value="театр" class="inox_shining_blue" id="mode3" onclick="setmode(this);">
+	  <input type="submit" value="пламя" class="inox_shining_blue" id="mode4" onclick="setmode(this);">
+	  <input type="submit" value="ночник" class="inox_shining_blue" id="mode5" onclick="setmode(this);">
+	  <input type="submit" value="выключено" class="inox_shining_blue" id="mode6" onclick="setmode(this);">
+	  
+
+     <hr>
+	 <h2 id="cM1">Вторая зона: {{cM1}}</h2>
+	   <div >
+	     <div class="col-sm-offset-20">
+	     <div  id="color-picker-second"  class="cp-default">
+        <script type="text/javascript">
+    
+          var c2 = ColorPicker(
+    
+            document.getElementById('color-picker-second'),
+    
+            function(hex, hsv, rgb) {
+                //console.log(rgb.r, rgb.g, rgb.b);         // [0-255], [0-255], [0-255]
+                //document.body.style.backgroundColor = hex;        // #HEX
+                document.getElementById('r1Val').value = rgb.r;
+	            document.getElementById('g1Val').value = rgb.g;
+	            document.getElementById('b1Val').value = rgb.b;	
+				document.getElementById('c2_border').style.borderBottom = "20px solid " + hex;				
+            });
+    
+        </script>
+			
+		  </div>	
+		  </div>
+		  <p id="c2_border" class="hr200">&nbsp;</p>
+	  <input type="submit" value="Установить" onclick="setRGBVal1(this);" class="inox_shining_blue">
+	  <input type="submit" value="Выключить" class="inox_shining_blue" id="mode2off" onclick="set2off(this);">
+	  
+	 </div>
+	 <hr>
+	 <h2 id="cM2">Индикатор активности</h2>
+	   <div >
+	     <div class="col-sm-offset-20">
+	     <div  id="color-picker-third"  class="cp-default">
+        <script type="text/javascript">
+    
+          var c3 = ColorPicker(
+    
+            document.getElementById('color-picker-third'),
+    
+            function(hex, hsv, rgb) {
+                //console.log(rgb.r, rgb.g, rgb.b);         // [0-255], [0-255], [0-255]
+                //document.body.style.backgroundColor = hex;        // #HEX
+                document.getElementById('r2Val').value = rgb.r;
+	            document.getElementById('g2Val').value = rgb.g;
+	            document.getElementById('b2Val').value = rgb.b;	
+				document.getElementById('c3_border').style.borderBottom = "20px solid " + hex;				
+            });
+    
+        </script>
+			
+		  </div>	
+		  </div>
+		  <p id="c3_border" class="hr200">&nbsp;</p>
+	  <input type="submit" value="Установить" onclick="setRGBVal2(this);" class="inox_shining_blue">
+	  <label><input id="usaled" type="checkbox" value="{{usaled}}" class="form-control">Использовать ленту как индикатор</label>
+	  
+	 </div>
+	 <hr>
+	 
+	 
+     <a class="btn btn-block btn-default" href="/device.htm">Настройка устройства</a>
+	 <a class="btn btn-block btn-default" href="/update.htm">Обновление</a>
+     <hr>
+     <input class="btn btn-block btn-warning" value="Перезагрузить устройство" onclick="restart(this,'Вы действительно хотите перезагрузить устройство?');" type="submit">     
+
+    </div>
+   </div>
+   </div>
+ </body>
+</html>

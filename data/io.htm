@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="ru">
+ <head>
+  <meta http-equiv="Content-type" content="text/html; charset=utf-8">
+  <link rel="stylesheet" href="/bootstrap.min.css">
+  <link rel="stylesheet" type="text/css" href="/style.css">
+  <script type="text/javascript" src="/function.js"></script>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>umolab Setup</title>
+  <script type="text/javascript">
+   var set_real_time;
+   function handleServerResponse(){
+    clearTimeout(set_real_time);
+    var res = jsonResponse.time.split(":");
+    real_time(hours=res[0],min=res[1],sec=res[2]);
+    document.body.style.backgroundColor="rgb("+jsonResponse.rgb+")";
+   }
+   
+   function set_io(submit){
+    server = "/io?IOLEDPIN="+val('IOLEDPIN')+
+	"&BOOTLEDPIN="+val('BOOTLEDPIN')+
+	"&RELAYPIN4="+val('RELAYPIN4')+
+	"&BUTTONPIN="+val('BUTTONPIN')+
+	"&PWMPIN="+val('PWMPIN')+
+	"&PIN_SDA="+val('PIN_SDA')+
+	"&PIN_SCL="+val('PIN_SCL')+
+	"&IO_inversed="+((document.getElementById("IO_inversed").checked)? 1:0) +
+	"&BOOT_inversed="+((document.getElementById("BOOT_inversed").checked)? 1:0);
+    send_request(submit,server);
+    alert("Измененя вступят в силу после перезагрузки. Пожалуйта перезагрузите устройство.");
+   }
+
+   function restart(submit,texts){
+    if (confirm(texts)) {
+	 server = "/restart?device=ok";
+     send_request(submit,server);
+     return true;
+    } else {
+     return false;
+    }
+   }
+  </script>
+ </head>
+ <body onload="load();">
+  <div class="container">
+   <div class="row" style="text-align:center;">
+    <div class="hr20"></div> 
+    <div class="col-sm-offset-2 col-sm-8 col-md-offset-3 col-md-6">
+     <h5 class="alert-info" id="ssdp_t">{{SSDP}}</h5>
+     <a class="btn btn-block btn-danger" href="/">Панель устройства</a>     
+     
+     <h2>Настройка IO</h2>	  
+	   <p><strong>Индикатор обмена</strong></p>
+       <input id="IOLEDPIN" value="{{IOLEDPIN}}" class="form-control" width="50%" pattern="[0-9]{1,3}" placeholder="IOLEDPIN">	   
+	   <label><input id="IO_inversed" type="checkbox" value="{{IO_inversed}}" class="form-control">Инверсно</label>
+       <hr>
+	   
+	   <p><strong>Индикатор активности</strong></p>
+	   <input id="BOOTLEDPIN" value="{{BOOTLEDPIN}}" class="form-control" pattern="[0-9]{1,3}" placeholder="BOOTLEDPIN">     	   
+	   <label><input id="BOOT_inversed" type="checkbox" value="{{BOOT_inversed}}" class="form-control">Инверсно</label>
+	   <hr>
+	   
+	   <p><strong>Адресная лента</strong></p>
+	   <input id="STRIPPIN" value="{{STRIPPIN}}" class="form-control" pattern="[0-9]{1,3}" placeholder="STRIPPIN">     
+	   <p><strong>Реле</strong></p>
+	   <input id="RELAYPIN4" value="{{RELAYPIN4}}" class="form-control" pattern="[0-9]{1,3}" placeholder="RELAYPIN4">     
+	   <p><strong>Кнопка</strong></p>
+	   <input id="BUTTONPIN" value="{{BUTTONPIN}}" class="form-control" pattern="[0-9]{1,3}" placeholder="BUTTONPIN">     
+	   <p><strong>Охлаждение - PWM</strong></p>
+	   <input id="PWMPIN" value="{{PWMPIN}}" class="form-control" pattern="[0-9]{1,3}" placeholder="PWMPIN">     
+	   <hr>
+	   <p><strong>I2C - SDA</strong></p>
+	   <input id="PIN_SDA" value="{{PIN_SDA}}" class="form-control" pattern="[0-9]{1,3}" placeholder="PIN_SDA">     
+	   <p><strong>I2C - SCL</strong></p>
+	   <input id="PIN_SCL" value="{{PIN_SCL}}" class="form-control" pattern="[0-9]{1,3}" placeholder="PIN_SCL">      
+	   <input class="btn btn-block btn-success" value="Сохранить" onclick="set_io(this);" type="submit">
+	   <hr>
+     <input class="btn btn-block btn-warning" value="Перезагрузить устройство" 
+	 onclick="restart(this,'Вы действительно хотите перезагрузить устройство?');" type="submit">     
+	 <a class="btn btn-block btn-default" href="/device.htm">Настройка устройства</a>
+    </div>
+   </div>
+  </div>
+ </body>
+</html>
