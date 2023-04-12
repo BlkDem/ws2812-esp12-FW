@@ -72,14 +72,14 @@ volatile int sPwmCounter=0;
 float tempC = -100.0;
 
 // Определяем переменные wifi
-String _ssid     = "samalet"; // Для хранения SSID
-String _password = "samalet123"; // Для хранения пароля сети
+String _ssid     = ""; // Для хранения SSID
+String _password = ""; // Для хранения пароля сети
 String _ssidAP = "WiFi";   // SSID AP точки доступа
 String _passwordAP = ""; // пароль точки доступа
 String SSDP_Name = "Update-Time"; // Имя SSDP
-String MQTT_server = "fs6.umodom.ru";
-String MQTT_user = "maxim";
-String MQTT_password = "ctdfcnjgjkm";
+String MQTT_server = "";
+String MQTT_user = "";
+String MQTT_password = "";
 int MQTT_port = 1883;               
 int timezone = 3;               
 boolean EnablePWM = false;      
